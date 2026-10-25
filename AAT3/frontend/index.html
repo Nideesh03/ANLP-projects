@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AAT-3 · RAG over the Neo4j Movies Graph</title><link rel="stylesheet" href="style.css"></head>
+<body>
+<header class="topbar"><div class="logo">NV</div>
+  <div><h1>NLP Lab Studio</h1><div class="course">Advance NLP · AML23702 · Dept. of AI &amp; ML</div></div>
+  <div class="student"><b>Nideesh V</b>1GA23AI028</div></header>
+<section class="hero"><span class="pill">AAT-3</span><h2>RAG over the Neo4j Movies Graph</h2><p>Entities in the question are matched to graph nodes, facts are retrieved with Cypher patterns and passed to the generator.</p></section>
+<main class="wrap">
+
+<div class="card full"><h3>Ask about movies</h3><label for="q">Question</label><input id="q" value="Who acted in Top Gun?">
+<div class="examples" data-for="q"><button>Who acted in Top Gun?</button><button>What movies did Clint Eastwood direct?</button><button>Tell me about Jerry Maguire</button><button>Which movies were released in 2003?</button><button>Who wrote A Few Good Men?</button></div>
+<button class="btn" id="go">Retrieve &amp; answer</button></div>
+<div class="card"><h3>Generated answer</h3><div id="ans"><p class="muted">No question yet.</p></div></div>
+<div class="card"><h3>Retrieved context</h3><div id="ctx"></div></div>
+</main>
+<div class="foot">Global Academy of Technology · Lab Exercise 3</div>
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+async function callApi(payload, outId) {
+  $(outId).innerHTML = "<p class='muted'>Running…</p>";
+  try {
+    const r = await fetch("/api/run", {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify(payload)});
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return await r.json();
+  } catch (e) { $(outId).innerHTML = `<p class="err">Could not reach the backend (${esc(e.message)}).</p>`; throw e; }
+}
+document.addEventListener("click", ev => {
+  const b = ev.target.closest(".examples button");
+  if (b) $(b.parentElement.dataset.for).value = b.textContent;
+});
+</script>
+<script src="app.js"></script>
+</body></html>
